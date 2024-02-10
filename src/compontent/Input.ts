@@ -26,6 +26,24 @@ export const Textarea = styled.textarea`
     color: #000;
 `;
 
+interface CheckType {
+    width? : number
+}
+export const Check = styled.div<CheckType>`
+    width: ${props=>props.width ? props.width+"px" : "20px"};
+    height: ${props=>props.width ? props.width+"px" : "20px"};
+    border: 1px solid #ccc;
+    flex: 0 0 auto;
+    position: relative;
+    cursor: pointer;
+    box-sizing: border-box;
+    svg {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+`;
 
 export const Button = styled.button`
     all: unset;

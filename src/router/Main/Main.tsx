@@ -1,10 +1,12 @@
-import styled from 'styled-components'
 import { FaPen } from "react-icons/fa";
-import { Button, Input, Textarea } from '../../compontent/Input';
-
-interface MemoType {
-  color? : "purple" | "yellow" | "orange" | "red" | "skyblue"
-}
+import {MemoColorType} from "../../types/customType";
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { modalOpen } from '../../Atom/Model';
+import { memoState } from '../../Atom/Memo';
+import { useState } from 'react';
+import styled from 'styled-components'
+import Write from './Write/Write';
+import { Check } from "../../compontent/Input";
 
 const colorHandler = (color? : string)=>{
   switch(color){
@@ -23,9 +25,8 @@ const colorHandler = (color? : string)=>{
   }
 }
 
-const Memo = styled.div<MemoType>`
+const Memo = styled.div<MemoColorType>`
 
-  width : 250px;
   background: ${props=>colorHandler(props.color).back};
   color: ${props=>colorHandler(props.color).font};
   box-sizing: border-box;
@@ -34,17 +35,27 @@ const Memo = styled.div<MemoType>`
   padding: 25px 15px;
 
   h1 {
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: 600;
   }
 
   .desc {
     margin-top: 20px;
     word-break: keep-all;
     line-height: 1.3;
+    font-size: 12px;
   }
 
   .checkList {
-    margin-top: 10px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    > div {
+      margin-right: 10px;
+    }
+    + .checkList {
+      margin-top: 15px;
+    }
   }
   
   .view {
@@ -88,6 +99,16 @@ const Grid = styled.div`
 `;
 
 function Main() {
+
+  const [modalState,setModalState] = useRecoilState(modalOpen);
+  const memoData = useRecoilValue(memoState);
+  const [id,setId] = useState(0);
+  
+  const viewHanlder = (id : number)=>{
+    setId(id);
+    setModalState(true);
+  }
+  
   return (
     <>
       <div className='main'>
@@ -95,155 +116,40 @@ function Main() {
         <SearchBox type='input' placeholder='제목을 입력해주세요.'/>
 
         <Grid>
-          <Memo color='purple'>
-            <h1>메모 사이트 구축하기</h1>
-            <p className="desc">
-              포트폴리오의 메모 사이트를 구축합니다.
-            </p>
-            <div className='checkList'><input type="checkbox" name="" id="" /> 체크리스트1 입니다.</div>
-            <div className='checkList'><input type="checkbox" name="" id="" /> 체크리스트2 입니다.</div>
-            <div className='checkList'><input type="checkbox" name="" id="" /> 체크리스트3 입니다.</div>
-            <div className="view"><FaPen/></div>
-          </Memo>
-          <Memo color='yellow'>
-            <h1>제목</h1>
-            <p className="desc">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum accusantium qui impedit id minus eos explicabo recusandae tempore in deserunt, temporibus sint reprehenderit iste doloremque expedita ea nisi doloribus libero.
-              Neque vero doloribus ab id ullam quia aliquam corporis, itaque sed quaerat, natus ut, saepe fugiat sint beatae odit. Dicta sint molestiae beatae illo doloremque eos aut ut voluptas eveniet.
-            </p>
-            <div className="view"><FaPen/></div>
-          </Memo>
-          <Memo color="skyblue">
-            <h1>제목</h1>
-            <p className="desc">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum accusantium qui impedit id minus eos explicabo recusandae tempore in deserunt, temporibus sint reprehenderit iste doloremque expedita ea nisi doloribus libero.
-              Neque vero doloribus ab id ullam quia aliquam corporis, itaque sed quaerat, natus ut, saepe fugiat sint beatae odit. Dicta sint molestiae beatae illo doloremque eos aut ut voluptas eveniet.
-            </p>
-            <div className="view"><FaPen/></div>
-          </Memo>
-          <Memo color="orange">
-            <h1>제목</h1>
-            <p className="desc">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum accusantium qui impedit id minus eos explicabo recusandae tempore in deserunt, temporibus sint reprehenderit iste doloremque expedita ea nisi doloribus libero.
-              Neque vero doloribus ab id ullam quia aliquam corporis, itaque sed quaerat, natus ut, saepe fugiat sint beatae odit. Dicta sint molestiae beatae illo doloremque eos aut ut voluptas eveniet.
-            </p>
-            <div className="view"><FaPen/></div>
-          </Memo>
-          <Memo color="red">
-            <h1>제목</h1>
-            <p className="desc">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum accusantium qui impedit id minus eos explicabo recusandae tempore in deserunt, temporibus sint reprehenderit iste doloremque expedita ea nisi doloribus libero.
-              Neque vero doloribus ab id ullam quia aliquam corporis, itaque sed quaerat, natus ut, saepe fugiat sint beatae odit. Dicta sint molestiae beatae illo doloremque eos aut ut voluptas eveniet.
-            </p>
-            <div className="view"><FaPen/></div>
-          </Memo>
+          {
+            memoData.map((item,index)=>(
+              <Memo color={item.color} key={index}>
+                <h1>{item.title}</h1>
+                <p className="desc">
+                  {item.desc}
+                </p>
+                {
+                  item.list.map((item,index)=>(
+                    <div 
+                      className='checkList' 
+                      key={index}
+                    >
+                      <Check width={15}/>
+                      {item.target}
+                    </div>
+                  ))
+                }
+                <div className="view" onClick={()=>viewHanlder(item.id)}><FaPen/></div>
+              </Memo>
+            ))
+          }
         </Grid>
         
-        <WriteBox>
-          <div className="cont">
-            제목
-            <Input 
-              style={{border : "1px solid #ccc"}}
-              color='#fff'
-              fontColor='#000'
-              type="text" 
-              placeholder='제목을 입력해주세요.'
-            />
-            <div className="text-box">
-              설명
-              <Textarea placeholder='설명을 입력해주세요.' />
-            </div>
-            <div className="add">
-              <div className="check"></div>
-              <input type="text" placeholder='할 일을 입력해주세요.' />
-            </div>
-            <div className="add">
-              <div className="check"></div>
-              <input type="text" placeholder='할 일을 입력해주세요.' />
-            </div>
-            <div className="add">
-              <div className="check"></div>
-              <input type="text" placeholder='할 일을 입력해주세요.' />
-            </div>
-            <Button>등록하기</Button>
-          </div>
-        </WriteBox>
-
+        {
+          modalState && <Write id={id} />
+        }
+        
       </div>
     </>
   )
 }
 
 
-const WriteBox = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    opacity: 0.5;
-  }
 
-  .cont {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    border-radius: 5px;
-    background: #fff;
-    z-index: 5;
-    padding: 50px 30px;
-    width: 50%;
-    box-sizing: border-box;
-    transform: translate(-50%,-50%);
-
-    > * {
-      margin-top: 10px;
-    }
-
-    button {
-      margin-top: 30px;
-    }
-
-    .text-box {
-      margin-top: 15px;
-      textarea {
-        margin-top: 5px;
-      }
-    }
-
-    .add {
-      margin-top: 15px;
-      display: flex;
-      align-items: center;
-
-      + .add {
-        margin-top: 10px;
-      }
-      .check {
-        width: 20px;
-        height: 20px;
-        border: 1px solid #ccc;
-      }
-      input {
-        margin-left: 10px;
-        width: 100%;
-        border: 1px solid #ccc;
-        padding: 0 1em;
-        box-sizing: border-box;
-        height: 30px;
-      }
-    }
-
-  }
-
-`
 
 export default Main
