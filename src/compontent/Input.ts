@@ -35,13 +35,19 @@ export const Check = styled.div<CheckType>`
     border: 1px solid #ccc;
     flex: 0 0 auto;
     position: relative;
-    cursor: pointer;
     box-sizing: border-box;
+    cursor: pointer;
     svg {
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%,-50%);
+    }
+    &.checked {
+        background: #000;
+        svg {
+            color: #fff;
+        }
     }
 `;
 

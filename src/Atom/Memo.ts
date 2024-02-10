@@ -1,6 +1,7 @@
 import { atom } from "recoil";
 
-interface listType {
+export interface listType {
+    listId : number
     chk : boolean
     target : string
 }
@@ -15,34 +16,5 @@ export interface memoType {
 
 export const memoState = atom<memoType[]>({
     key: 'memoState',
-    default: [
-        {
-            id : 1,
-            color : "purple",
-            title : "제목입니다.",
-            desc : "설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.",
-            list : [
-                {
-                    chk : false,
-                    target : "11111111111"
-                },
-                {
-                    chk : true,
-                    target : "1231231231232131"
-                }
-            ]
-        },
-        {
-            id : 2,
-            color : "orange",
-            title : "제목입니다.",
-            desc : "설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.",
-            list : [
-                {
-                    chk : false,
-                    target : "11111111111"
-                }
-            ]
-        }
-    ],
+    default: [],
 });

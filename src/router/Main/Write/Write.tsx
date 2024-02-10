@@ -1,10 +1,11 @@
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { Button, Check, Input, Textarea } from '../../../compontent/Input';
 import { ColorCircle } from '../../../compontent/Style';
 import { modalOpen, writeState } from '../../../Atom/Model';
 import styled from 'styled-components'
-import { memoState } from '../../../Atom/Memo';
+import { listType, memoState } from '../../../Atom/Memo';
 import { IoCheckmark } from "react-icons/io5";
+import { useEffect, useState } from 'react';
 
 type Props = {
   id? : number
@@ -95,34 +96,105 @@ const WriteBox = styled.div`
 function Write({id} : Props) {
 
   const setModalState = useSetRecoilState(modalOpen);
-  const writeResult = useRecoilValue(writeState);
-  const memoData = useRecoilValue(memoState);
-/*   const [result,setResult] = useState<memoType>({
-    id : 0,
-    color : "purple",
-    title : "",
-    desc : "",
-    list : []
-  });
+  const writeResult = useRecoilValue(writeState); // 작성 전달 props
+  const [memoData,setMemoData] = useRecoilState(memoState); // 메모 state
 
-  useEffect(()=>{
-
-    if(id){
-      const filter = memoData.filter((item)=>item.id === id);
-      setResult(filter[0]);
+  const [title,setTitle] = useState("");
+  const [desc,setDesc] = useState("");
+  const [list,setList] = useState<listType[]>([
+    {
+      listId : 1,
+      chk : false,
+      target : ""
     }
+  ]);
 
-  },[id]); */
+  const inputHandler = (e:React.FormEvent<any>,action : React.Dispatch<React.SetStateAction<any>>)=>{
+    e.preventDefault();
+    action(e.currentTarget.value);
+  }
+
+  const onSubmitHandler = ()=>{
+    if(title === "") return alert('제목을 입력해주세요.');
+    setMemoData(prev=>{
+      const prevData = [...prev];
+      const lastId = prevData.length > 0 ? prevData[prevData.length-1].id + 1 : 1;
+      prevData.push({
+        id : lastId,
+        color : writeResult.color,
+        title,
+        desc,
+        list
+      })
+      return prevData;
+    })
+  }
+
+  // 리스트 인풋 핸들러
+  const listInputHanlder = (e:React.FormEvent<HTMLInputElement>,id : number)=>{
+    const input = e.currentTarget.value;
+    setList((prev)=>{
+      const prevData = [...prev];
+      const index = prevData.findIndex((item)=>item.listId === id);
+      if(index > -1){
+        prevData[index].target = input;
+      }
+      return prevData;
+    })
+  }
+
+  // 리스트 체크 핸들러
+  const listCheckHandler = (id : number)=>{
+    setList(prev => {
+      return prev.map(item => {
+        if(item.listId === id){
+          return {
+            ...item,
+            chk : !item.chk
+          }
+        }else{
+          return item;
+        }
+      })
+    })
+  }
+
+  // 리스트 추가
+  const listAddHandler = (e:React.KeyboardEvent<HTMLInputElement>)=>{
+    if(e.key === "Enter"){
+      setList((prev)=>{
+        const prevData = [...prev];
+        const lastId = prevData[prevData.length-1].listId + 1;
+        prevData.push(
+          {
+            listId : lastId,
+            chk : false,
+            target : ""
+          }
+        )
+        return prevData;
+      })
+
+    }
+  }
 
   return (
     <WriteBox>
-        <div className="back" onClick={()=>setModalState(false)}/>
+        <div 
+          className="back" 
+          onClick={()=>setModalState(false)}
+        />
         <div className="cont">
             <div className="select-box">
                 선택된 컬러
                 <div className="select-color">
                     {
-                    ["purple","yellow","orange","red","skyblue"].map((item,index)=><ColorCircle select={item === writeResult.color ? writeResult.color : undefined} color={item} key={index}/>)
+                    ["purple","yellow","orange","red","skyblue"].map((item,index)=>
+                      <ColorCircle 
+                        select={item === writeResult.color ? writeResult.color : undefined} 
+                        color={item} 
+                        key={index}
+                      />)
                     }
                 </div>
             </div>
@@ -134,21 +206,39 @@ function Write({id} : Props) {
                     fontColor='#000'
                     type="text" 
                     placeholder='제목을 입력해주세요.'
-                    // defaultValue={result.title}
+                    onInput={(e)=>inputHandler(e,setTitle)}
+                    defaultValue={title}
                 />
             </div>
             <div className="text-box">
                 설명
                 <Textarea 
                   placeholder='설명을 입력해주세요.' 
-                  // defaultValue={result.desc}
+                  onInput={(e)=>inputHandler(e,setDesc)}
+                  defaultValue={desc}
                 />
             </div>
-            <div className="add">
-              <Check><IoCheckmark/></Check>
-              <input type="text" placeholder='할 일을 입력해주세요.' />
-            </div>
-            <Button>등록하기</Button>
+            {
+              list.map((item,index)=>
+                <div className="add" key={index}>
+                  <Check
+                    className={item.chk ? "checked" : ""}
+                    onClick={()=>listCheckHandler(item.listId)}
+                  >
+                    <IoCheckmark/>
+                  </Check>
+                  <input 
+                    type="text" 
+                    placeholder='할 일을 입력해주세요.'
+                    defaultValue={item.target}
+                    onInput={(e)=>listInputHanlder(e,item.listId)}
+                    onKeyDown={(e)=>listAddHandler(e)}
+                  />
+                </div>
+              )
+            }
+            
+            <Button onClick={onSubmitHandler}>등록하기</Button>
         </div>
     </WriteBox>
   )
