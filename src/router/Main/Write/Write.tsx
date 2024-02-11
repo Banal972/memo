@@ -1,9 +1,9 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { Button, Check, Input, Textarea } from '../../../compontent/Input';
 import { ColorCircle } from '../../../compontent/Style';
-import { modalOpen, writeState } from '../../../Atom/Model';
+import { modalOpen, writeState } from '../../../Atom/Modal';
 import styled from 'styled-components'
-import { listType, memoState } from '../../../Atom/Memo';
+import { colorState, listType, memoState } from '../../../Atom/Memo';
 import { IoCheckmark } from "react-icons/io5";
 import { useEffect, useRef, useState } from 'react';
 
@@ -97,6 +97,7 @@ function Write({id} : Props) {
 
   const listRef = useRef<HTMLInputElement | null>(null);
 
+  const color = useRecoilValue(colorState); // 컬러 atom 가져오기
   const setModalState = useSetRecoilState(modalOpen);
   const writeResult = useRecoilValue(writeState); // 작성 전달 props
   const [memoData,setMemoData] = useRecoilState(memoState); // 메모 state
@@ -111,10 +112,8 @@ function Write({id} : Props) {
     }
   ]);
 
-  useEffect(()=>{
-
+  useEffect(()=>{ // 리스트에 변동이 생기면 focus를 새로 
     if(listRef.current) listRef.current.focus();
-
   },[list])
 
   // 인풋박스 핸들러
@@ -199,7 +198,7 @@ function Write({id} : Props) {
                 선택된 컬러
                 <div className="select-color">
                     {
-                    ["purple","yellow","orange","red","skyblue"].map((item,index)=>
+                    color.map((item,index)=>
                       <ColorCircle 
                         select={item === writeResult.color ? writeResult.color : undefined} 
                         color={item} 

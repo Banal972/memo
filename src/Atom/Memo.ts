@@ -18,3 +18,10 @@ export const memoState = atom<memoType[]>({
     key: 'memoState',
     default: [],
 });
+
+
+// 컬러
+export const colorState = atom({
+    key : "colorState",
+    default : ["purple","yellow","orange","red","skyblue"]
+})

@@ -1,12 +1,12 @@
 import { FaPen } from "react-icons/fa";
 import {MemoColorType} from "../../types/customType";
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { modalOpen } from '../../Atom/Model';
+import { useRecoilState } from 'recoil';
+import { modalOpen } from '../../Atom/Modal';
 import { memoState } from '../../Atom/Memo';
-import { useState } from 'react';
 import styled from 'styled-components'
 import Write from './Write/Write';
 import { Check } from "../../compontent/Input";
+import { IoCheckmark } from "react-icons/io5";
 
 const colorHandler = (color? : string)=>{
   switch(color){
@@ -50,12 +50,26 @@ const Memo = styled.div<MemoColorType>`
     margin-top: 20px;
     display: flex;
     align-items: center;
+    font-size: 14px;
     > div {
       margin-right: 10px;
     }
     + .checkList {
       margin-top: 15px;
     }
+
+    &.checked {
+      text-decoration: line-through;
+
+      div {
+        background: #fff;
+        svg {
+          color: #000;
+        }
+      }
+
+    }
+
   }
   
   .view {
@@ -101,11 +115,36 @@ const Grid = styled.div`
 function Main() {
 
   const [modalState,setModalState] = useRecoilState(modalOpen);
-  const memoData = useRecoilValue(memoState);
-  const [id,setId] = useState(0);
+  const [memoData,setMemoData] = useRecoilState(memoState);
   
+  // 리스트 체크 핸들러
+  const listCheckHandler = (id : number)=>{
+    /* 
+      타입은 memoType[] 이기 때문에
+      map 으로 새로운 함수를 만들때 
+      [{},{}] 이런 형태로 return 을 해줘야 합니다.
+    */
+    setMemoData(prev => {
+      return prev.map(memo => {
+        return { // {} 로 return 해주고
+          ...memo, // 안에 있는 내용 그대로 가져오기
+          list : memo.list.map((item)=>{ // list의 chk만 변경
+            if(item.listId === id){
+              return {
+                ...item,
+                chk : !item.chk
+              }
+            }else{
+              return item; // id가 다르면 그대로 냅두기
+            }
+          })
+        }
+      })
+    })
+  }
+
+  // view 페이지 보여주기
   const viewHanlder = (id : number)=>{
-    setId(id);
     setModalState(true);
   }
   
@@ -126,10 +165,12 @@ function Main() {
                 {
                   item.list.map((item,index)=>(
                     <div 
-                      className='checkList' 
+                      className={`checkList ${item.chk ? "checked" : ""}`}
                       key={index}
                     >
-                      <Check width={15}/>
+                      <Check 
+                        onClick={()=>listCheckHandler(item.listId)}
+                      ><IoCheckmark/></Check>
                       {item.target}
                     </div>
                   ))
@@ -141,7 +182,7 @@ function Main() {
         </Grid>
         
         {
-          modalState && <Write id={id} />
+          modalState && <Write/>
         }
         
       </div>

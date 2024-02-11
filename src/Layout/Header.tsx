@@ -1,9 +1,10 @@
 import { IoAdd } from "react-icons/io5";
 import { IoMdExit } from "react-icons/io";
 import { Link, useNavigate } from 'react-router-dom';
-import { modalOpen, writeState } from "../Atom/Model";
-import { useSetRecoilState } from "recoil";
+import { modalOpen, writeState } from "../Atom/Modal";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from 'styled-components';
+import { colorState } from "../Atom/Memo";
 
 const HeaderLayout = styled.header`
   border-right: 1px solid #D9D9D9;
@@ -89,42 +90,43 @@ const SelectColor = styled.ul`
 
 function Header() {
 
-    const setModalState = useSetRecoilState(modalOpen);
-    const setWriteState = useSetRecoilState(writeState);
-    const navigate = useNavigate();
+  const color = useRecoilValue(colorState);
+  const setModalState = useSetRecoilState(modalOpen);
+  const setWriteState = useSetRecoilState(writeState);
+  const navigate = useNavigate();
 
-    const viewHanlder = (color : string)=>{
-      setWriteState(prev=>(
-        {
-          color : color
-        }
-      ))
-      setModalState(true);
-    }
+  const viewHanlder = (color : string)=>{
+    setWriteState(prev=>(
+      {
+        color : color
+      }
+    ))
+    setModalState(true);
+  }
 
   return (
     <HeaderLayout>
-        <Link to={'/'}><img src='/image/logo.svg' width={40}/></Link>
-        <Menu>
+      <Link to={'/'}><img src='/image/logo.svg' width={40}/></Link>
+      <Menu>
         <div className="menubox">
             <div className="box">
             <IoAdd/>
             </div>
         </div>
         <SelectColor className='selectColor'>
-            {
-                ['purple','yellow','orange','red','skyblue'].map((item,index)=><li
-                    onClick={()=>viewHanlder(item)} 
-                    className={item} 
-                    key={index}
-                />)
-            }
+          {
+            color.map((item,index)=><li
+              onClick={()=>viewHanlder(item)} 
+              className={item} 
+              key={index}
+            />)
+          }
         </SelectColor>
-        </Menu>
-        <div 
+      </Menu>
+      <div 
         className="logout"
         onClick={()=>{navigate('/login')}}
-        ><IoMdExit/></div>
+      ><IoMdExit/></div>
     </HeaderLayout>
   )
 }
