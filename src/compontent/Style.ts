@@ -21,8 +21,8 @@ const colorHandler = (color? : string)=>{
 export const ColorCircle = styled.div<MemoColorType>`
   width: 20px;
   border-radius: 10000px;
-  background: ${props=>colorHandler(props.color).back};
-  border: ${props=> props.select ? "2px solid #000" : ""};
+  background: ${props=>colorHandler(props.$color).back};
+  border: ${props=> props.$select ? "2px solid #000" : ""};
   box-sizing: border-box;
   &::after {
     content: '';

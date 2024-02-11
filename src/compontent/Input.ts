@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
 interface InputType {
-    color? : string
-    fontColor? : string
+    $color? : string
+    $fontcolor? : string
 }
 
 export const Input = styled.input<InputType>`
@@ -11,8 +11,8 @@ export const Input = styled.input<InputType>`
     height: 40px;
     box-sizing: border-box;
     padding: 0 1em;
-    background : ${props=>props.color ? props.color : "#2a167c"};
-    color : ${props=>props.fontColor ? props.fontColor: "#fff"};
+    background : ${props=>props.$color ? props.$color : "#2a167c"};
+    color : ${props=>props.$fontcolor ? props.$fontcolor: "#fff"};
 `;
 
 export const Textarea = styled.textarea`

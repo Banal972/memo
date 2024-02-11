@@ -112,8 +112,10 @@ function Write({id} : Props) {
     }
   ]);
 
-  useEffect(()=>{ // 리스트에 변동이 생기면 focus를 새로 
-    if(listRef.current) listRef.current.focus();
+  useEffect(()=>{ // 리스트에 변동이 생기면 focus를 새로
+    if(list.length > 1){
+      if(listRef.current) listRef.current.focus();
+    }
   },[list])
 
   // 인풋박스 핸들러
@@ -200,8 +202,8 @@ function Write({id} : Props) {
                     {
                     color.map((item,index)=>
                       <ColorCircle 
-                        select={item === writeResult.color ? writeResult.color : undefined} 
-                        color={item} 
+                        $select={item === writeResult.color ? writeResult.color : undefined} 
+                        $color={item} 
                         key={index}
                       />)
                     }
@@ -211,8 +213,8 @@ function Write({id} : Props) {
                 제목
                 <Input 
                     style={{border : "1px solid #ccc"}}
-                    color='#fff'
-                    fontColor='#000'
+                    $color='#fff'
+                    $fontcolor='#000'
                     type="text" 
                     placeholder='제목을 입력해주세요.'
                     onInput={(e)=>inputHandler(e,setTitle)}
@@ -247,7 +249,6 @@ function Write({id} : Props) {
                 </div>
               )
             }
-            
             <Button onClick={onSubmitHandler}>등록하기</Button>
         </div>
     </WriteBox>
