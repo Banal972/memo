@@ -120,7 +120,7 @@ function Main() {
   const [memoData,setMemoData] = useRecoilState(memoState);
   
   // 리스트 체크 핸들러
-  const listCheckHandler = (id : number)=>{
+  const listCheckHandler = (id : number,listId : number)=>{
     /* 
       타입은 memoType[] 이기 때문에
       map 으로 새로운 함수를 만들때 
@@ -128,18 +128,22 @@ function Main() {
     */
     setMemoData(prev => {
       return prev.map(memo => {
-        return { // {} 로 return 해주고
-          ...memo, // 안에 있는 내용 그대로 가져오기
-          list : memo.list.map((item)=>{ // list의 chk만 변경
-            if(item.listId === id){
-              return {
-                ...item,
-                chk : !item.chk
+        if(memo.id === id){
+          return { // {} 로 return 해주고
+            ...memo, // 안에 있는 내용 그대로 가져오기
+            list : memo.list.map((item)=>{ // list의 chk만 변경
+              if(item.listId === listId){
+                return {
+                  ...item,
+                  chk : !item.chk
+                }
+              }else{
+                return item; // id가 다르면 그대로 냅두기
               }
-            }else{
-              return item; // id가 다르면 그대로 냅두기
-            }
-          })
+            })
+          }
+        }else{
+          return memo;
         }
       })
     })
@@ -171,15 +175,15 @@ function Main() {
                   {item.desc}
                 </p>
                 {
-                  item.list.map((item,index)=>(
+                  item.list.map((list,index)=>(
                     <div 
-                      className={`checkList ${item.chk ? "checked" : ""}`}
+                      className={`checkList ${list.chk ? "checked" : ""}`}
                       key={index}
                     >
                       <Check 
-                        onClick={()=>listCheckHandler(item.listId)}
+                        onClick={()=>listCheckHandler(item.id,list.listId)}
                       ><IoCheckmark/></Check>
-                      {item.target}
+                      {list.target}
                     </div>
                   ))
                 }
