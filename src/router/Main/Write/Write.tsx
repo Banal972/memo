@@ -177,10 +177,10 @@ function Write() {
         return prevData;
       });
       setTimeout(()=>{
-        if(list.length > 1){ // 리스트에 변동이 생기면 focus를 이동시킵니다. (버그로 인해서 이전껄로 focus 잡힘)
+        if(list.length >= 1){ // 리스트에 변동이 생기면 focus를 이동시킵니다. (버그로 인해서 이전껄로 focus 잡힘)
           if(listRef.current) listRef.current.focus();
         }
-      },0)
+      },10)
     }
   }
 
