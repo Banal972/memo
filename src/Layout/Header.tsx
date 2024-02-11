@@ -106,7 +106,7 @@ function Header() {
 
   return (
     <HeaderLayout>
-      <Link to={'/'}><img src='/image/logo.svg' width={40}/></Link>
+      <Link to={'/'}><img src='/image/logo.svg' width={40} alt="로고"/></Link>
       <Menu>
         <div className="menubox">
             <div className="box">

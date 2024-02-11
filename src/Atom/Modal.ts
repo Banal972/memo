@@ -1,12 +1,12 @@
 import { atom } from "recoil";
 
 export const modalOpen = atom({
-    key: 'ModalState',
+    key: 'modal',
     default: false,
 });
 
 export const writeState = atom({
-    key : "WriteState",
+    key : "write",
     default : {
         color : "purple"
     }

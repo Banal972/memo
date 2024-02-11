@@ -15,13 +15,13 @@ export interface memoType {
 }
 
 export const memoState = atom<memoType[]>({
-    key: 'memoState',
+    key: 'memo',
     default: [],
 });
 
 
 // 컬러
 export const colorState = atom({
-    key : "colorState",
+    key : "color",
     default : ["purple","yellow","orange","red","skyblue"]
 })
