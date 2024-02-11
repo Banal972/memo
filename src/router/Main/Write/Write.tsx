@@ -176,9 +176,11 @@ function Write() {
         )
         return prevData;
       });
-      if(list.length > 1){ // 리스트에 변동이 생기면 focus를 이동시킵니다. (버그로 인해서 이전껄로 focus 잡힘)
-        if(listRef.current) listRef.current.focus();
-      }
+      setTimeout(()=>{
+        if(list.length > 1){ // 리스트에 변동이 생기면 focus를 이동시킵니다. (버그로 인해서 이전껄로 focus 잡힘)
+          if(listRef.current) listRef.current.focus();
+        }
+      },0)
     }
   }
 
@@ -282,7 +284,7 @@ function Write() {
                   <input 
                     type="text" 
                     placeholder='할 일을 입력해주세요.'
-                    ref={index === list.length - 1 ? listRef : null}
+                    ref={index === list.length - 1 ? listRef : undefined}
                     defaultValue={item.target}
                     onInput={(e)=>listInputHanlder(e,item.listId)}
                     onKeyDown={(e)=>listAddHandler(e)}
