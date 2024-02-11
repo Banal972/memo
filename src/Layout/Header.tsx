@@ -3,8 +3,8 @@ import { IoMdExit } from "react-icons/io";
 import { Link, useNavigate } from 'react-router-dom';
 import { modalOpen, writeState } from "../Atom/Modal";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import styled from 'styled-components';
 import { colorState } from "../Atom/Memo";
+import styled from 'styled-components';
 
 const HeaderLayout = styled.header`
   border-right: 1px solid #D9D9D9;
@@ -98,7 +98,8 @@ function Header() {
   const viewHanlder = (color : string)=>{
     setWriteState(prev=>(
       {
-        color : color
+        color : color,
+        id : null
       }
     ))
     setModalState(true);

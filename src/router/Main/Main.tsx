@@ -1,12 +1,13 @@
 import { FaPen } from "react-icons/fa";
 import {MemoColorType} from "../../types/customType";
-import { useRecoilState } from 'recoil';
-import { modalOpen } from '../../Atom/Modal';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { modalOpen, writeState } from '../../Atom/Modal';
 import { memoState } from '../../Atom/Memo';
 import styled from 'styled-components'
 import Write from './Write/Write';
 import { Check } from "../../compontent/Input";
 import { IoCheckmark } from "react-icons/io5";
+import { useState } from "react";
 
 const colorHandler = (color? : string)=>{
   switch(color){
@@ -114,6 +115,7 @@ const Grid = styled.div`
 
 function Main() {
 
+  const setWriteState = useSetRecoilState(writeState);
   const [modalState,setModalState] = useRecoilState(modalOpen);
   const [memoData,setMemoData] = useRecoilState(memoState);
   
@@ -145,6 +147,12 @@ function Main() {
 
   // view 페이지 보여주기
   const viewHanlder = (id : number)=>{
+    setWriteState(prev=>(
+      {
+        ...prev,
+        id
+      }
+    ))
     setModalState(true);
   }
   

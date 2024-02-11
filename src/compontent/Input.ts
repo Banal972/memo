@@ -51,7 +51,12 @@ export const Check = styled.div<CheckType>`
     }
 `;
 
-export const Button = styled.button`
+
+interface ButtonType {
+    $color? : string
+}
+
+export const Button = styled.button<ButtonType>`
     all: unset;
     display: block;
     text-align: center;
@@ -59,7 +64,7 @@ export const Button = styled.button`
     width: 30%;
     height: 50px;
     font-size: 14px;
-    background: #000;
+    background: ${({$color})=> $color ? $color : "#000"};
     color : #fff;
     border-radius: 1000px;
     cursor: pointer;

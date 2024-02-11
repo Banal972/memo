@@ -5,9 +5,15 @@ export const modalOpen = atom({
     default: false,
 });
 
-export const writeState = atom({
+interface writeType {
+    color : string
+    id : number | null
+}
+
+export const writeState = atom<writeType>({
     key : "write",
     default : {
-        color : "purple"
+        color : "purple",
+        id : null
     }
 })

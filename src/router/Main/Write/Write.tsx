@@ -93,12 +93,13 @@ const WriteBox = styled.div`
 
 `;
 
-function Write({id} : Props) {
+function Write() {
 
+  // listRef
   const listRef = useRef<HTMLInputElement | null>(null);
 
+  const setModalState = useSetRecoilState(modalOpen); // 모달창
   const color = useRecoilValue(colorState); // 컬러 atom 가져오기
-  const setModalState = useSetRecoilState(modalOpen);
   const writeResult = useRecoilValue(writeState); // 작성 전달 props
   const [memoData,setMemoData] = useRecoilState(memoState); // 메모 state
 
@@ -112,11 +113,17 @@ function Write({id} : Props) {
     }
   ]);
 
-  useEffect(()=>{ // 리스트에 변동이 생기면 focus를 새로
-    if(list.length > 1){
-      if(listRef.current) listRef.current.focus();
+  // id props를 받았을때 데이터를 가져와서 넣어줍니다.
+  useEffect(()=>{
+    
+    if(writeResult.id){
+      const filter = memoData.filter(item=>item.id === writeResult.id)[0];
+      setTitle(filter.title);
+      setDesc(filter.desc);
+      setList(filter.list);
     }
-  },[list])
+
+  },[writeResult.id])
 
   // 인풋박스 핸들러
   const inputHandler = (e:React.FormEvent<any>,action : React.Dispatch<React.SetStateAction<any>>)=>{
@@ -124,34 +131,17 @@ function Write({id} : Props) {
     action(e.currentTarget.value);
   }
 
-  // 등록버튼
-  const onSubmitHandler = ()=>{
-    if(title === "") return alert('제목을 입력해주세요.');
-    setMemoData(prev=>{
-      const prevData = [...prev];
-      const lastId = prevData.length > 0 ? prevData[prevData.length-1].id + 1 : 1;
-      prevData.push({
-        id : lastId,
-        color : writeResult.color,
-        title,
-        desc,
-        list
-      })
-      return prevData;
-    });
-    setModalState(false);
-  }
-
   // 리스트 인풋 핸들러
   const listInputHanlder = (e:React.FormEvent<HTMLInputElement>,id : number)=>{
     const input = e.currentTarget.value;
     setList((prev)=>{
-      const prevData = [...prev];
-      const index = prevData.findIndex((item)=>item.listId === id);
-      if(index > -1){
-        prevData[index].target = input;
-      }
-      return prevData;
+      return prev.map((item)=>{
+        if(item.listId === id){
+          return {...item,target : input}
+        }else{
+          return item;
+        }
+      })
     })
   }
 
@@ -186,7 +176,58 @@ function Write({id} : Props) {
         )
         return prevData;
       });
+      if(list.length > 1){ // 리스트에 변동이 생기면 focus를 이동시킵니다. (버그로 인해서 이전껄로 focus 잡힘)
+        if(listRef.current) listRef.current.focus();
+      }
     }
+  }
+
+  // 등록버튼
+  const onSubmitHandler = ()=>{
+    if(title === "") return alert('제목을 입력해주세요.');
+    setMemoData(prev=>{
+      const prevData = [...prev];
+      const lastId = prevData.length > 0 ? prevData[prevData.length-1].id + 1 : 1;
+      prevData.push({
+        id : lastId,
+        color : writeResult.color,
+        title,
+        desc,
+        list
+      })
+      return prevData;
+    });
+    setModalState(false);
+  }
+
+  // 수정버튼
+  const onUpdateHandler = ()=>{
+    if(title === "") return alert('제목을 입력해주세요.');
+    setMemoData(prev=>{
+      return prev.map((memo)=>{
+        if(memo.id === writeResult.id){
+          return {
+            ...memo,
+            color : writeResult.color,
+            title,
+            desc,
+            list
+          }
+        }else{
+          return memo;
+        }
+      })
+    });
+    setModalState(false); // 모달창 닫기
+  }
+
+  // 삭제버튼
+  const onDeleteHandler = ()=>{
+    setMemoData(prev=>{
+      const filter = prev.filter((memo)=>memo.id !== writeResult.id);
+      return filter;
+    });
+    setModalState(false); // 모달창 닫기
   }
 
   return (
@@ -249,7 +290,25 @@ function Write({id} : Props) {
                 </div>
               )
             }
-            <Button onClick={onSubmitHandler}>등록하기</Button>
+            {
+              !writeResult.id ?
+                <Button 
+                  onClick={onSubmitHandler}
+                >등록하기</Button>
+              : 
+                <div style={{display:"flex"}}>
+                  <Button
+                    $color={"#3c9dff"}
+                    onClick={onUpdateHandler}
+                    style={{marginRight: 0}}
+                  >수정하기</Button>
+                  <Button
+                    $color={"#FF3C3C"}
+                    onClick={onDeleteHandler}
+                    style={{marginLeft: 25}}
+                  >삭제하기</Button>
+                </div>
+            }
         </div>
     </WriteBox>
   )
