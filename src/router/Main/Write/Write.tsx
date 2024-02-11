@@ -5,7 +5,7 @@ import { modalOpen, writeState } from '../../../Atom/Model';
 import styled from 'styled-components'
 import { listType, memoState } from '../../../Atom/Memo';
 import { IoCheckmark } from "react-icons/io5";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Props = {
   id? : number
@@ -95,6 +95,8 @@ const WriteBox = styled.div`
 
 function Write({id} : Props) {
 
+  const listRef = useRef<HTMLInputElement | null>(null);
+
   const setModalState = useSetRecoilState(modalOpen);
   const writeResult = useRecoilValue(writeState); // 작성 전달 props
   const [memoData,setMemoData] = useRecoilState(memoState); // 메모 state
@@ -109,11 +111,19 @@ function Write({id} : Props) {
     }
   ]);
 
+  useEffect(()=>{
+
+    if(listRef.current) listRef.current.focus();
+
+  },[list])
+
+  // 인풋박스 핸들러
   const inputHandler = (e:React.FormEvent<any>,action : React.Dispatch<React.SetStateAction<any>>)=>{
     e.preventDefault();
     action(e.currentTarget.value);
   }
 
+  // 등록버튼
   const onSubmitHandler = ()=>{
     if(title === "") return alert('제목을 입력해주세요.');
     setMemoData(prev=>{
@@ -127,7 +137,8 @@ function Write({id} : Props) {
         list
       })
       return prevData;
-    })
+    });
+    setModalState(false);
   }
 
   // 리스트 인풋 핸들러
@@ -173,8 +184,7 @@ function Write({id} : Props) {
           }
         )
         return prevData;
-      })
-
+      });
     }
   }
 
@@ -230,6 +240,7 @@ function Write({id} : Props) {
                   <input 
                     type="text" 
                     placeholder='할 일을 입력해주세요.'
+                    ref={index === list.length - 1 ? listRef : null}
                     defaultValue={item.target}
                     onInput={(e)=>listInputHanlder(e,item.listId)}
                     onKeyDown={(e)=>listAddHandler(e)}
