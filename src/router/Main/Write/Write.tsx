@@ -7,10 +7,6 @@ import { colorState, listType, memoState } from '../../../Atom/Memo';
 import { IoCheckmark } from "react-icons/io5";
 import { useEffect, useRef, useState } from 'react';
 
-type Props = {
-  id? : number
-}
-
 const WriteBox = styled.div`
   
   position: absolute;
@@ -123,7 +119,7 @@ function Write() {
       setList(filter.list);
     }
 
-  },[writeResult.id])
+  },[writeResult.id,memoData])
 
   // 인풋박스 핸들러
   const inputHandler = (e:React.FormEvent<any>,action : React.Dispatch<React.SetStateAction<any>>)=>{

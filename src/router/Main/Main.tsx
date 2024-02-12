@@ -1,13 +1,14 @@
 import { FaPen } from "react-icons/fa";
-import {MemoColorType} from "../../types/customType";
+import { MemoColorType } from "../../types/customType";
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { modalOpen, writeState } from '../../Atom/Modal';
-import { memoState } from '../../Atom/Memo';
-import styled from 'styled-components'
-import Write from './Write/Write';
+import { memoState, memoType } from '../../Atom/Memo';
 import { Check } from "../../compontent/Input";
 import { IoCheckmark } from "react-icons/io5";
-import { useState } from "react";
+import styled from 'styled-components'
+import Write from './Write/Write';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const colorHandler = (color? : string)=>{
   switch(color){
@@ -118,7 +119,24 @@ function Main() {
   const setWriteState = useSetRecoilState(writeState);
   const [modalState,setModalState] = useRecoilState(modalOpen);
   const [memoData,setMemoData] = useRecoilState(memoState);
+  const [filter, setFilter] = useState<memoType[]>([]);
   
+  useEffect(()=>{
+    axios.get('http://localhost:9999/memo')
+    .then(({data} : {data : memoType[]})=>{
+      setMemoData(prev=>
+        [...prev,...data]
+      );
+    })
+    .catch(e=>{
+      // 에러가 발생했을때 실행해줍니다.
+    })
+  },[])
+
+  useEffect(()=>{
+    setFilter(memoData);
+  },[memoData]);
+
   // 리스트 체크 핸들러
   const listCheckHandler = (id : number,listId : number)=>{
     /* 
@@ -159,16 +177,29 @@ function Main() {
     ))
     setModalState(true);
   }
+
+  // 검색
+  const onSearchHandler = (e : React.KeyboardEvent<HTMLInputElement>)=>{
+    if(e.key === "Enter") { 
+      const input = e.currentTarget.value;
+      const search = memoData.filter(item=>item.title.includes(input));
+      setFilter(search);
+    }
+  }
   
   return (
     <>
       <div className='main'>
 
-        <SearchBox type='input' placeholder='제목을 입력해주세요.'/>
+        <SearchBox 
+          type='input' 
+          placeholder='제목을 입력해주세요.'
+          onKeyDown={(e)=>onSearchHandler(e)}
+        />
 
         <Grid>
           {
-            memoData.map((item,index)=>(
+            filter.map((item,index)=>(
               <Memo color={item.color} key={index}>
                 <h1>{item.title}</h1>
                 <p className="desc">
@@ -201,8 +232,6 @@ function Main() {
     </>
   )
 }
-
-
 
 
 export default Main
