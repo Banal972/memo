@@ -27,6 +27,9 @@ const HeaderLayout = styled.header`
     bottom: 25px;
     font-size: 32px;
     cursor: pointer;
+    svg {
+      color : #907CDE;
+    }
   }
 
 `;
@@ -34,8 +37,8 @@ const HeaderLayout = styled.header`
 const Menu = styled.div`
   .menubox {
     margin: 25px auto 0;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 10000%;
     background: #000;
     position: relative;
@@ -50,7 +53,7 @@ const Menu = styled.div`
       left: 50%;
       transform: translate(-50%,-50%);
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
     }
   }
@@ -140,18 +143,16 @@ function Header() {
 
   // 작성페이지, 뷰페이지 모달창
   const viewHanlder = (color : string)=>{
-    setWriteState(prev=>(
-      {
-        color : color,
-        id : null
-      }
-    ))
+    setWriteState({
+      color : color,
+      id : null
+    });
     setModalState(true);
   }
 
   return (
     <HeaderLayout>
-      <Link to={'/'}><img src='/image/logo.svg' width={40} alt="로고"/></Link>
+      <Link to={'/'}><img src={process.env.PUBLIC_URL+"/image/logo.svg"} width={40} alt="로고"/></Link>
       <Menu 
         ref={menuRef}
         onMouseLeave={menuMouseLeaveHandler}

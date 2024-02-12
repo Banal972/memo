@@ -9,7 +9,7 @@ const Layout = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url("/image/background.jpg") no-repeat center/cover;
+    background: url(${process.env.PUBLIC_URL + "/image/background.jpg"}) no-repeat center/cover;
 `;
 
 const LoginBox = styled.div`
