@@ -4,7 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { modalOpen, writeState } from "../Atom/Modal";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { colorState } from "../Atom/Memo";
+import { useEffect, useRef } from "react";
 import styled from 'styled-components';
+import gsap from "gsap";
 
 const HeaderLayout = styled.header`
   border-right: 1px solid #D9D9D9;
@@ -39,6 +41,7 @@ const Menu = styled.div`
     position: relative;
     color : #fff;
     font-size: 24px;
+    z-index: 2;
     .box {
       position: absolute;
       width: 50%;
@@ -90,11 +93,52 @@ const SelectColor = styled.ul`
 
 function Header() {
 
+  // 내비게이터
+  const navigate = useNavigate();
+
+  // MenuRef
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuBoxRef = useRef(null);
+
+  // 컴포넌트가 다 불러왔을때 GSAP 애니메이션 세팅
+  useEffect(()=>{
+
+    menuRef.current?.querySelectorAll('ul li').forEach((item)=>{
+      gsap.set(item,{
+        y : -50,
+        opacity : 0
+      })
+    })
+
+  },[]);
+  
+  const menuBoxMouseOverHandler = ()=>{
+    menuRef.current?.querySelectorAll('ul li').forEach((item,index)=>{
+      gsap.to(item,{
+        y : 0,
+        opacity : 1,
+        duration : 0.4,
+        delay : index * 0.2
+      })
+    })
+  }
+
+  const menuMouseLeaveHandler = ()=>{
+    menuRef.current?.querySelectorAll('ul li').forEach((item,index)=>{
+      gsap.to(item,{
+        y : -50,
+        opacity : 0,
+        duration : 0.4,
+        delay : index * 0.15
+      })
+    })
+  }
+
   const color = useRecoilValue(colorState);
   const setModalState = useSetRecoilState(modalOpen);
   const setWriteState = useSetRecoilState(writeState);
-  const navigate = useNavigate();
 
+  // 작성페이지, 뷰페이지 모달창
   const viewHanlder = (color : string)=>{
     setWriteState(prev=>(
       {
@@ -108,8 +152,15 @@ function Header() {
   return (
     <HeaderLayout>
       <Link to={'/'}><img src='/image/logo.svg' width={40} alt="로고"/></Link>
-      <Menu>
-        <div className="menubox">
+      <Menu 
+        ref={menuRef}
+        onMouseLeave={menuMouseLeaveHandler}
+      >
+        <div 
+          className="menubox" 
+          ref={menuBoxRef}
+          onMouseOver={menuBoxMouseOverHandler}
+        >
             <div className="box">
             <IoAdd/>
             </div>
@@ -126,7 +177,7 @@ function Header() {
       </Menu>
       <div 
         className="logout"
-        onClick={()=>{navigate('/login')}}
+        onClick={()=>{navigate('/')}}
       ><IoMdExit/></div>
     </HeaderLayout>
   )

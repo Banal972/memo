@@ -1,6 +1,7 @@
-import styled from "styled-components"
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../compontent/Input";
+import { IoCheckmark } from "react-icons/io5";
+import styled from "styled-components"
 
 const Layout = styled.div`
     width: 100%;
@@ -37,12 +38,19 @@ const LoginBox = styled.div`
 
 `;
 
-
-
 const Check = styled.div`
     margin-top: 15px;
     font-size: 12px;
-    input {display:none;}
+    input {
+        display:none;
+        &:checked ~ label,
+        &[checked] ~ label {
+            .check {
+                background: #fff;
+                color : #000;
+            }
+        }
+    }
     label {
         display: flex;
         cursor: pointer;
@@ -52,6 +60,13 @@ const Check = styled.div`
             height: 15px;
             border: 1px solid #fff;
             margin-right: 10px;
+            position: relative;
+            svg {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-50%);
+            }
         }
     }
 `;
@@ -81,19 +96,21 @@ function Login() {
                     color="#2a167c"
                     type="text" 
                     placeholder="아이디를 입력해주세요."
+                    defaultValue={"userid"}
                 />
                 <Input 
                     color="#2a167c"
                     type="password" 
                     placeholder="비밀번호를 입력해주새요."
+                    defaultValue={"password"}
                 />
                 <Check>
-                    <input type="checkbox" id="save" />
-                    <label htmlFor="save"> <div className="check"></div> 아이디 저장</label>
+                    <input type="checkbox" id="save"/>
+                    <label htmlFor="save"> <div className="check"><IoCheckmark/></div> 아이디 저장</label>
                 </Check>
                 <Button 
                     type="button"
-                    onClick={()=>navigate('/')}
+                    onClick={()=>navigate('/main')}
                 >로그인</Button>
             </div>
         </LoginBox>

@@ -2,10 +2,11 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { Button, Check, Input, Textarea } from '../../../compontent/Input';
 import { ColorCircle } from '../../../compontent/Style';
 import { modalOpen, writeState } from '../../../Atom/Modal';
-import styled from 'styled-components'
 import { colorState, listType, memoState } from '../../../Atom/Memo';
 import { IoCheckmark } from "react-icons/io5";
 import { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components'
+
 
 const WriteBox = styled.div`
   

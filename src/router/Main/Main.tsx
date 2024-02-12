@@ -5,10 +5,10 @@ import { modalOpen, writeState } from '../../Atom/Modal';
 import { memoState, memoType } from '../../Atom/Memo';
 import { Check } from "../../compontent/Input";
 import { IoCheckmark } from "react-icons/io5";
+import { useEffect, useState } from "react";
 import styled from 'styled-components'
 import Write from './Write/Write';
-import { useEffect, useState } from "react";
-import axios from "axios";
+
 
 const colorHandler = (color? : string)=>{
   switch(color){
@@ -39,6 +39,7 @@ const Memo = styled.div<MemoColorType>`
   h1 {
     font-size: 18px;
     font-weight: 600;
+    line-height: 1.3;
   }
 
   .desc {
@@ -112,6 +113,13 @@ const Grid = styled.div`
     margin: 30px 15px 0;
   }
 
+  @media screen and (max-width:1280px){
+    > div {
+      flex: 0 1 calc(100%/4 - 30px);
+      margin: 30px 15px 0;
+    }
+  }
+
 `;
 
 function Main() {
@@ -120,18 +128,6 @@ function Main() {
   const [modalState,setModalState] = useRecoilState(modalOpen);
   const [memoData,setMemoData] = useRecoilState(memoState);
   const [filter, setFilter] = useState<memoType[]>([]);
-  
-  useEffect(()=>{
-    axios.get('http://localhost:9999/memo')
-    .then(({data} : {data : memoType[]})=>{
-      setMemoData(prev=>
-        [...prev,...data]
-      );
-    })
-    .catch(e=>{
-      // 에러가 발생했을때 실행해줍니다.
-    })
-  },[])
 
   useEffect(()=>{
     setFilter(memoData);
